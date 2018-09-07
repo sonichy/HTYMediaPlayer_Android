@@ -1,0 +1,7 @@
+CCTV-6,http://cctv.live.cntv.liveplay.myqcloud.com:8000/live/flv/channel218?ptype=1&amode=1&AUTH=cntv0001201706231MsaWKhZdM8O8IPjZNVNEYOdIwHf0PBy+gZ9R5V6pbgaXSmkgcrwtjgyLsoSIvukNypvKfPMuz0+21pppEux5g==
+广东影视,http://r.gslb.lecloud.com/live/hls/201612083000002ja99/desc.m3u8
+湖南电视剧,http://175.6.15.34:8080/nn_live/nn_x64/aWQ9SE5EU0pNUFAzNjAmdXJsX2MxPTIwMDAmbm5fYWs9MDFiNDBkODVkOTVkNDY2OWE0ZjFkNzZiYzhlMmVjNjM2YyZudHRsPTMmbmNtc2lkPTExMDI0MDExJm5ncz01OWU2MTA0MTAwMDRkNmQ4MTA0YzM5MTMzMmY3YmEzZiZubmQ9emdkeC5odW5hbi5oZW5neWFuZyZuZnQ9dHMmZGZsb3c9MSZubl91c2VyX2lkPTAmbmRpPTEwJm5kdj0yMDE1MDYwNC4xJm5kdD1wYWQmbmFsPTAxNDExMGU2NTkwNjA3NmYxYTQyOWQzMzg0NzgzZGY5MzQ3NGRmNTI4MDc0MmU,/HNDSJMPP360.m3u8
+潇湘电影,http://119.39.133.90:6610/001/2/ch00000090990000001070/2500.m3u8?IASHttpSessionId=OTT1644820170331030353030676&m3u8_level=2&virtualDomain=001.live_hls.zte.com&ispcode=10002
+东方电影,http://yfcdn.live.pptv.com/live/2659025d519e4162b19551a80bb4b4bb/1508248445.ts?type=yunfancdn
+黑龙江影视,http://stream2.hljtv.com/hljys/sd/live.m3u8
+吉林影视,http://stream1.jlntv.cn/yspd/sd/../../yspd_sd/1508247662/1508250302110.ts?_upt=c8180dde1508257502
