@@ -6,7 +6,7 @@
                 android:orientation="vertical">
 
     <VideoView
-        android:id="@+id/video"
+        android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
@@ -15,15 +15,15 @@
 
     <ListView
         android:id="@+id/listViewClass"
-        android:layout_width="100dp"
+        android:layout_width="100sp"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true" />
 
     <ListView
         android:id="@+id/listViewTV"
-        android:layout_width="150dp"
+        android:layout_width="120sp"
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/listViewClass"
-        android:layout_toRightOf="@+id/listViewClass"/>
+        android:layout_toRightOf="@+id/listViewClass" />
 
 </RelativeLayout>
