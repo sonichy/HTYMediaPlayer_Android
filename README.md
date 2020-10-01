@@ -6,7 +6,7 @@
 * 自动横竖屏
 * 简化屏幕常亮
 ### 1.7 (2020-08)  
-*修复节目不能设置背景色问题（https://blog.csdn.net/peakerli/article/details/37658649,https://zhidao.baidu.com/question/262188209076803805.html）。
+* 修复节目不能设置背景色问题（https://blog.csdn.net/peakerli/article/details/37658649,https://zhidao.baidu.com/question/262188209076803805.html）。
 * 更换直播源。  
 * 适配全面屏虚拟键黑色背景。
 ### 1.6 (2018-09-07)  
