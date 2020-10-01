@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -61,7 +62,6 @@ public class MainActivity extends Activity {
 
     String[] listClassStr = { "央视频道", "卫视频道", "其他频道" };
     String[] TVClass, TVItems;
-    String source = "";
     boolean seekable;
 
     @Override
@@ -75,6 +75,10 @@ public class MainActivity extends Activity {
             public void onPrepared(MediaPlayer mp) {
                 width = mp.getVideoWidth();
                 height = mp.getVideoHeight();
+                if (width > height)
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                else
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         });
         listViewClass = (ListView) findViewById(R.id.listViewClass);
@@ -109,7 +113,7 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         TVClass = new String[listClassStr.length];
         for(int i=0; i<listClassStr.length; i++) {
-            TVClass[i] = ReadFile("tv" + i + ".txt");
+            TVClass[i] = readFile("tv" + i + ".txt");
         }
         MMR = new MediaMetadataRetriever();
 
@@ -147,8 +151,11 @@ public class MainActivity extends Activity {
                 videoView.setVideoURI(uri);
                 videoView.requestFocus();
                 videoView.start();
-                source = "net";
-                //MMR.setDataSource(url, new HashMap<String, String>()); //m3u8崩溃
+                try {
+                    MMR.setDataSource(url, new HashMap()); //m3u8崩溃
+                } catch (Exception e) {
+                    Log.e(Thread.currentThread().getStackTrace()[2] + "", e.toString());
+                }
             }
         });
 
@@ -170,33 +177,34 @@ public class MainActivity extends Activity {
 
     @Override
     public void onPause() {
-        releaseWakeLock();
-        currentPosition = videoView.getCurrentPosition();
-        videoView.pause();
-        Log.e(Thread.currentThread().getStackTrace()[2] + "", "onPause: " + currentPosition);
+        //releaseWakeLock();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //currentPosition = videoView.getCurrentPosition();
+        //videoView.pause();
+        //Log.e(Thread.currentThread().getStackTrace()[2] + "", "onPause: " + currentPosition);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        acquireWakeLock();
-        Log.e("MainActivity", "onResume " + source);
-        if(seekable){
-            videoView.seekTo(currentPosition);
-            Log.e(Thread.currentThread().getStackTrace()[2] + "", "onResume: " + currentPosition);
-        }
-        videoView.start();
+        //acquireWakeLock();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        if (seekable) {
+//            videoView.seekTo(currentPosition);
+//            Log.e(Thread.currentThread().getStackTrace()[2] + "", "onResume: " + currentPosition);
+//        }
+        //videoView.start();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(listViewClass.getVisibility() == View.VISIBLE) {
+            if (listViewClass.getVisibility() == View.VISIBLE) {
                 listViewClass.setVisibility(View.GONE);
                 listViewTV.setVisibility(View.GONE);
-            }else{
-                MenuDialog();
+            } else {
+                menuDialog();
             }
             return true;
         }
@@ -215,16 +223,16 @@ public class MainActivity extends Activity {
     //        return false;
     //    }
 
-    void AboutDialog() {
+    void aboutDialog() {
         new AlertDialog.Builder(this)
                 .setIcon(R.mipmap.ic_launcher)
-                .setTitle("海天鹰播放器 V1.7")
+                .setTitle("海天鹰播放器 V1.8")
                 .setMessage("播放本地视频，打开网络视频，直播视频，直播菜单双层分类，横竖屏切换。\n作者：海天鹰\nE-mail: sonichy@163.com\nQQ: 84429027\n参考：\n视频播放：http://blog.csdn.net/liuhaoyutz/article/details/10188305\nListView.getChildAt(i)返回null崩溃：\nhttps://blog.csdn.net/peakerli/article/details/37658649\nhttps://zhidao.baidu.com/question/262188209076803805.html")
                 .setPositiveButton("确定", null)
                 .show();
     }
 
-    void OpenURLDialog(){
+    void openURL(){
         final EditText editText = new EditText(this);
         ClipboardManager CM = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         ClipData CD = CM.getPrimaryClip();
@@ -243,14 +251,18 @@ public class MainActivity extends Activity {
                             videoView.requestFocus();
                             videoView.start();
                             seekable = true;
-                            // MMR.setDataSource(ETText, new HashMap<String, String>()); //m3u8崩溃
+                            try {
+                                 MMR.setDataSource(s, new HashMap<String, String>()); //m3u8崩溃
+                            } catch (Exception e) {
+                                Log.e(Thread.currentThread().getStackTrace()[2] + "", e.toString());
+                            }
                         }
                     }
                 })
                 .show();
     }
 
-    void MenuDialog() {
+    void menuDialog() {
         final String items[] = {"打开视频", "打开网址","直播", "信息", "横屏", "竖屏", "截图", "关于", "退出"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //builder.setTitle("菜单");
@@ -261,17 +273,17 @@ public class MainActivity extends Activity {
                 dialog.dismiss();
                 switch (which) {
                     case 0:
-                        OpenVideo();
+                        openVideo();
                         break;
                     case 1:
-                        OpenURLDialog();
+                        openURL();
                         break;
                     case 2:
                         listViewClass.setVisibility(View.VISIBLE);
                         listViewTV.setVisibility(View.VISIBLE);
                         break;
                     case 3:
-                        InfoDialog();
+                        infoDialog();
                         break;
                     case 4:
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -282,10 +294,10 @@ public class MainActivity extends Activity {
                         videoView.start();
                         break;
                     case 6:
-                        Screenshot();
+                        screenshot();
                         break;
                     case 7:
-                        AboutDialog();
+                        aboutDialog();
                         break;
                     case 8:
                         finish();
@@ -296,14 +308,14 @@ public class MainActivity extends Activity {
         builder.create().show();
     }
 
-    void OpenVideo() {
+    void openVideo() {
         int CHOOSE_VIDEO = 100;
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("video/*");
         startActivityForResult(intent, CHOOSE_VIDEO);
     }
 
-    void Screenshot() {
+    void screenshot() {
         SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String filepath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Screenshots/" + SDF.format(new Date()) + ".png";
         Bitmap bitmap = MMR.getFrameAtTime(videoView.getCurrentPosition() * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
@@ -317,7 +329,7 @@ public class MainActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "截图保存到：\n" + filepath, Toast.LENGTH_SHORT).show();
                 MediaScannerConnection.scanFile(MainActivity.this, new String[]{filepath}, null, null);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(Thread.currentThread().getStackTrace()[2] + "", e.toString());
             }
         } else {
             Log.e(Thread.currentThread().getStackTrace()[2] + "", "Screenshot: Bitmap is null !");
@@ -338,7 +350,7 @@ public class MainActivity extends Activity {
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
                 cursor.moveToFirst();
                 path = cursor.getString(column_index);
-                if(path == null){
+                if (path == null) {
                     if (Build.VERSION.SDK_INT >= 19) {
                         String docId = DocumentsContract.getDocumentId(uri);
                         Log.e(Thread.currentThread().getStackTrace()[2] + "", docId);
@@ -363,15 +375,15 @@ public class MainActivity extends Activity {
                 videoView.requestFocus();
                 videoView.start();
                 try {
-                    MMR.setDataSource(path, new HashMap<String, String>());
+                    MMR.setDataSource(path);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(Thread.currentThread().getStackTrace()[2] + "", e.toString());
                 }
             }
         }
     }
 
-    String ReadFile(String filename) {
+    String readFile(String filename) {
         String txt = "";
         try {
             InputStream in = getResources().getAssets().open(filename);
@@ -388,7 +400,7 @@ public class MainActivity extends Activity {
         return txt;
     }
 
-    void InfoDialog() {
+    void infoDialog() {
         Uri mUri = null;
         try {
             Field mUriField = VideoView.class.getDeclaredField("mUri");
@@ -396,8 +408,8 @@ public class MainActivity extends Activity {
             mUri = (Uri)mUriField.get(videoView);
         } catch(Exception e) {
         }
-        String path="";
-        if(mUri != null){
+        String path = "";
+        if (mUri != null) {
             path = mUri.toString();
         }
         //String resolution = "分辨率：" + MMR.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH) + " X " + MMR.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
@@ -431,8 +443,8 @@ public class MainActivity extends Activity {
 
     private void acquireWakeLock() {
         if(mWakeLock == null) {
-            PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getClass().getCanonicalName());
+            PowerManager PM = (PowerManager)getSystemService(Context.POWER_SERVICE);
+            mWakeLock = PM.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getClass().getCanonicalName());
             mWakeLock.acquire();
         }
     }
